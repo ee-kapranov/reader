@@ -1,16 +1,20 @@
 import { Router, Request, Response } from 'express';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { logger } from '../logger.js';
 
 const router = Router();
 
 router.post('/', async (req: Request, res: Response): Promise<void> => {
+  const requestId = req.requestId;
   const { url } = req.body as { url?: string };
 
   if (!url || url.trim() === '') {
     res.status(400).json({ error: 'URL is required' });
     return;
   }
+
+  logger.info({ requestId, event: 'fetch_url_start', url });
 
   try {
     const response = await axios.get(url, {
@@ -51,10 +55,12 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     // Normalize whitespace
     text = text.replace(/\s+/g, ' ').trim();
 
+    logger.info({ requestId, event: 'fetch_url_complete', textLength: text.length });
+
     res.json({ text });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('Fetch URL error:', message);
+    const message = err instanceof Error ? err.message : String(err);
+    logger.error({ requestId, event: 'fetch_url_error', url, error: message });
     res.status(500).json({ error: `Failed to fetch URL: ${message}` });
   }
 });

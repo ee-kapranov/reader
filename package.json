@@ -1,12 +1,12 @@
 {
   "name": "reader",
   "version": "1.0.0",
-  "description": "",
+  "description": "Text-to-speech reader web app",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node src/server.ts",
+    "dev": "nodemon --ext ts --exec 'tsx src/server.ts'",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "repository": {
@@ -16,7 +16,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "bugs": {
     "url": "https://github.com/ee-kapranov/reader/issues"
   },
@@ -24,14 +27,15 @@
   "dependencies": {
     "axios": "^1.13.5",
     "cheerio": "^1.2.0",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
-    "@types/cheerio": "^0.22.35",
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.0",
+    "esbuild": "^0.27.3",
     "nodemon": "^3.1.14",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
