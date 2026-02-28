@@ -209,18 +209,19 @@ async function synthesizeWithPiper(options: GenerateSpeechOptions): Promise<void
   await runProcess('piper', args, options.text);
 }
 
+// order matters; first entry becomes default when populating UI
 const providers: Record<OfflineProviderId, OfflineProvider> = {
-  espeak: {
-    id: 'espeak',
-    label: 'eSpeak NG',
-    listVoices: listEspeakVoices,
-    synthesizeToWav: synthesizeWithEspeak,
-  },
   piper: {
     id: 'piper',
     label: 'Piper',
     listVoices: listPiperVoices,
     synthesizeToWav: synthesizeWithPiper,
+  },
+  espeak: {
+    id: 'espeak',
+    label: 'eSpeak NG',
+    listVoices: listEspeakVoices,
+    synthesizeToWav: synthesizeWithEspeak,
   },
 };
 

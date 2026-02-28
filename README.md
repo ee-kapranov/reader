@@ -14,9 +14,9 @@ A **Node.js + TypeScript** web app that converts text or web-page content to spe
 ## Requirements
 
 - Node.js ≥ 18
-- **espeak-ng** installed on the system (`sudo apt-get install espeak-ng` on Debian/Ubuntu)
-- *(Optional)* **piper** binary for higher-quality offline neural voices
-- *(Optional)* `ffmpeg` for MP3 output (WAV is used as fallback)
+- **piper** binary (will be downloaded automatically by `npm start` if missing)
+- **espeak-ng** installed on the system (`sudo apt-get install espeak-ng` on Debian/Ubuntu) – used as fallback when Piper is unavailable
+- `ffmpeg` for MP3 output (WAV is used as fallback)
 
 ## Quick start
 
@@ -81,12 +81,9 @@ wget -O .models/piper/en_US-lessac-medium.onnx.json \
 	https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
 ```
 
-Run the app with Piper enabled:
+Run the app (Piper will be configured automatically if missing):
 
 ```bash
-PATH="$PWD/.tools/piper/piper:$PATH" \
-PIPER_MODEL="$PWD/.models/piper/en_US-lessac-medium.onnx" \
-PIPER_MODELS="$PWD/.models/piper/en_US-lessac-medium.onnx" \
 npm start
 ```
 

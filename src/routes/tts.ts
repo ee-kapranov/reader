@@ -89,7 +89,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const providerId = provider?.trim() ? provider.trim() : 'espeak';
+  const providerId = provider?.trim() ? provider.trim() : 'piper';
   if (!isOfflineProviderId(providerId)) {
     res.status(400).json({ error: `Unsupported provider: ${providerId}` });
     return;
