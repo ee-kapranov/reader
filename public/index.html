@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reader — Text to Speech</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📖 Reader</h1>
+      <p class="subtitle">Convert text or web pages to speech</p>
+    </header>
+
+    <section class="card" id="url-section">
+      <h2>Load from URL</h2>
+      <div class="input-row">
+        <input
+          type="url"
+          id="url-input"
+          placeholder="https://example.com/article"
+          autocomplete="url"
+        />
+        <button id="load-btn" class="btn btn-secondary">
+          <span class="icon">🔗</span> Load
+        </button>
+      </div>
+      <div id="url-error" class="error-msg hidden"></div>
+    </section>
+
+    <section class="card" id="text-section">
+      <h2>Text</h2>
+      <textarea
+        id="text-input"
+        rows="10"
+        placeholder="Paste or type text here, or load from a URL above…"
+      ></textarea>
+      <div class="text-meta">
+        <span id="char-count">0 characters</span>
+      </div>
+    </section>
+
+    <section class="card" id="settings-section">
+      <h2>Speech Settings</h2>
+      <div class="settings-grid">
+        <label>
+          Speed
+          <input type="range" id="speed" min="80" max="400" value="175" step="5" />
+          <span id="speed-val">175 wpm</span>
+        </label>
+        <label>
+          Pitch
+          <input type="range" id="pitch" min="0" max="99" value="50" step="1" />
+          <span id="pitch-val">50</span>
+        </label>
+      </div>
+    </section>
+
+    <div class="action-row">
+      <button id="generate-btn" class="btn btn-primary">
+        <span class="icon">🔊</span> Generate Speech
+      </button>
+    </div>
+
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <span>Generating audio…</span>
+    </div>
+
+    <section class="card" id="player-section" style="display:none">
+      <h2>Audio Player</h2>
+      <audio id="audio-player" controls></audio>
+      <div class="download-row">
+        <a id="download-link" class="btn btn-secondary" download="speech.wav">
+          ⬇ Download
+        </a>
+      </div>
+    </section>
+
+    <div id="gen-error" class="error-msg hidden"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
