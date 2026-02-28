@@ -45,6 +45,14 @@
       <h2>Speech Settings</h2>
       <div class="settings-grid">
         <label>
+          Provider
+          <select id="provider"></select>
+        </label>
+        <label>
+          Voice
+          <select id="voice"></select>
+        </label>
+        <label>
           Speed
           <input type="range" id="speed" min="80" max="400" value="175" step="5" />
           <span id="speed-val">175 wpm</span>
@@ -55,6 +63,7 @@
           <span id="pitch-val">50</span>
         </label>
       </div>
+      <div id="provider-status" class="settings-status"></div>
     </section>
 
     <div class="action-row">

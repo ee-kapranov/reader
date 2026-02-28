@@ -5,6 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/server.js",
     "dev": "nodemon --ext ts --exec 'tsx src/server.ts'",
     "test": "echo \"No tests specified\" && exit 0"

@@ -6,6 +6,7 @@ A **Node.js + TypeScript** web app that converts text or web-page content to spe
 
 - 🔗 Load text from any URL (article content extracted automatically)
 - ✏️ Or type / paste your own text
+- 🗣 Offline provider + voice selection (**eSpeak NG** and **Piper**)
 - 🎛 Adjustable speech **speed** and **pitch**
 - 🔊 In-browser audio player with controls
 - ⬇ Download the generated audio file (WAV / MP3)
@@ -14,6 +15,7 @@ A **Node.js + TypeScript** web app that converts text or web-page content to spe
 
 - Node.js ≥ 18
 - **espeak-ng** installed on the system (`sudo apt-get install espeak-ng` on Debian/Ubuntu)
+- *(Optional)* **piper** binary for higher-quality offline neural voices
 - *(Optional)* `ffmpeg` for MP3 output (WAV is used as fallback)
 
 ## Quick start
@@ -41,10 +43,53 @@ npm run dev
 | Environment variable | Default | Description |
 |---|---|---|
 | `PORT` | `3000` | TCP port the server listens on |
+| `PIPER_MODEL` | - | Path to a default Piper `.onnx` model used when provider is `piper` |
+| `PIPER_MODELS` | - | Comma-separated list of Piper model paths shown in the voice selector |
 
 ## API
 
 | Endpoint | Method | Body | Description |
 |---|---|---|---|
 | `/api/fetch-url` | POST | `{ url }` | Fetch and extract plain text from a URL |
-| `/api/tts` | POST | `{ text, speed?, pitch? }` | Generate speech; returns audio stream |
+| `/api/tts/voices` | GET | - | List offline providers and available voices |
+| `/api/tts` | POST | `{ text, speed?, pitch?, provider?, voice? }` | Generate speech; returns audio stream |
+
+### Piper notes
+
+- Set `PIPER_MODEL` to at least one `.onnx` model path to enable synthesis with provider `piper`.
+- Add multiple models via `PIPER_MODELS` to expose them in the voice dropdown.
+- `speed` is mapped to Piper `--length_scale`; `pitch` is ignored by Piper.
+
+### Local Piper setup (Ubuntu)
+
+The steps below install Piper locally in the project directory (no system package required):
+
+```bash
+# from project root
+mkdir -p .tools/piper .models/piper
+
+# download Piper binary
+wget -O /tmp/piper_linux_x86_64.tar.gz \
+	https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz
+tar -xzf /tmp/piper_linux_x86_64.tar.gz -C .tools/piper
+chmod +x .tools/piper/piper/piper .tools/piper/piper/piper_phonemize
+
+# download one model
+wget -O .models/piper/en_US-lessac-medium.onnx \
+	https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx
+wget -O .models/piper/en_US-lessac-medium.onnx.json \
+	https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+```
+
+Run the app with Piper enabled:
+
+```bash
+PATH="$PWD/.tools/piper/piper:$PATH" \
+PIPER_MODEL="$PWD/.models/piper/en_US-lessac-medium.onnx" \
+PIPER_MODELS="$PWD/.models/piper/en_US-lessac-medium.onnx" \
+npm start
+```
+
+After startup, open the UI and choose:
+- Provider: `Piper`
+- Voice: `en_US-lessac-medium (en_US)` (non-default)

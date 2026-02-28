@@ -1,6 +1,16 @@
 node_modules/
 dist/
 *.js.map
-*.d.ts
-*.d.ts.map
 .env
+.env.local
+.env.*.local
+
+# Local offline TTS assets
+.tools/piper/
+.models/piper/
+
+# Logs
+logs/
+*.log
+/tmp/*.log
+!src/types/*.d.ts

@@ -9,6 +9,9 @@
   const speedVal = document.getElementById('speed-val');
   const pitchRange = /** @type {HTMLInputElement} */ (document.getElementById('pitch'));
   const pitchVal = document.getElementById('pitch-val');
+  const providerSelect = /** @type {HTMLSelectElement} */ (document.getElementById('provider'));
+  const voiceSelect = /** @type {HTMLSelectElement} */ (document.getElementById('voice'));
+  const providerStatus = document.getElementById('provider-status');
   const generateBtn = /** @type {HTMLButtonElement} */ (document.getElementById('generate-btn'));
   const loading = document.getElementById('loading');
   const playerSection = document.getElementById('player-section');
@@ -39,6 +42,95 @@
   function hideError(el) {
     el.classList.add('hidden');
   }
+
+  /** @type {Record<string, { id: string; name: string; language: string }[]>} */
+  const voicesByProvider = {};
+
+  function populateProviders(providers) {
+    providerSelect.innerHTML = '';
+    let firstEnabledProviderId = null;
+
+    for (const provider of providers) {
+      const option = document.createElement('option');
+      option.value = provider.id;
+      option.textContent = provider.label;
+      const voiceCount = (provider.voices || []).length;
+      const isDisabled = provider.id === 'piper' && voiceCount === 0;
+      option.disabled = isDisabled;
+      if (isDisabled) {
+        option.textContent = `${provider.label} (not configured)`;
+      } else if (!firstEnabledProviderId) {
+        firstEnabledProviderId = provider.id;
+      }
+      providerSelect.appendChild(option);
+      voicesByProvider[provider.id] = provider.voices || [];
+    }
+
+    if (firstEnabledProviderId) {
+      providerSelect.value = firstEnabledProviderId;
+    }
+  }
+
+  function populateVoices(providerId) {
+    voiceSelect.innerHTML = '';
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Default voice';
+    voiceSelect.appendChild(defaultOption);
+
+    const voices = voicesByProvider[providerId] || [];
+    for (const voice of voices) {
+      const option = document.createElement('option');
+      option.value = voice.id;
+      option.textContent = `${voice.name} (${voice.language})`;
+      voiceSelect.appendChild(option);
+    }
+  }
+
+  function renderProviderStatus(providers) {
+    const espeak = providers.find((provider) => provider.id === 'espeak');
+    const piper = providers.find((provider) => provider.id === 'piper');
+
+    const espeakStatus = espeak
+      ? `eSpeak: ready (${(espeak.voices || []).length} voices)`
+      : 'eSpeak: unavailable';
+
+    const piperVoiceCount = (piper && piper.voices ? piper.voices.length : 0);
+    const piperStatus = piperVoiceCount > 0
+      ? `Piper: configured (${piperVoiceCount} models)`
+      : 'Piper: not configured (set PIPER_MODEL/PIPER_MODELS)';
+
+    providerStatus.textContent = `${espeakStatus} · ${piperStatus}`;
+  }
+
+  async function loadVoiceOptions() {
+    try {
+      const res = await fetch('/api/tts/voices');
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to load voices');
+      }
+
+      const providers = data.providers || [];
+      if (providers.length === 0) {
+        throw new Error('No offline providers available');
+      }
+
+      populateProviders(providers);
+      populateVoices(providerSelect.value || providers[0].id);
+      renderProviderStatus(providers);
+    } catch (err) {
+      showError(genError, err.message || 'Failed to load voices');
+      providerSelect.innerHTML = '<option value="espeak">eSpeak NG</option>';
+      voiceSelect.innerHTML = '<option value="">Default voice</option>';
+      providerStatus.textContent = 'Provider status unavailable';
+    }
+  }
+
+  providerSelect.addEventListener('change', () => {
+    populateVoices(providerSelect.value);
+  });
 
   // Load text from URL
   loadBtn.addEventListener('click', async () => {
@@ -99,6 +191,8 @@
           text,
           speed: Number(speedRange.value),
           pitch: Number(pitchRange.value),
+          provider: providerSelect.value,
+          voice: voiceSelect.value || undefined,
         }),
       });
 
@@ -127,4 +221,6 @@
       generateBtn.disabled = false;
     }
   });
+
+  loadVoiceOptions();
 })();
