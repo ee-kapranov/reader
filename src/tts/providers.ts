@@ -153,10 +153,25 @@ function parsePiperLanguage(modelName: string): string {
 }
 
 function configuredPiperModels(): string[] {
-  const models = [process.env.PIPER_MODEL, ...splitCsv(process.env.PIPER_MODELS)]
+  // start with environment overrides
+  const envModels = [process.env.PIPER_MODEL, ...splitCsv(process.env.PIPER_MODELS)]
     .map((item) => item?.trim())
     .filter((item): item is string => Boolean(item));
-  return Array.from(new Set(models));
+
+  // additionally include any onnx files dropped in the models directory
+  const modelDir = path.join(process.cwd(), '.models', 'piper');
+  let discovered: string[] = [];
+  try {
+    const entries = fs.readdirSync(modelDir);
+    discovered = entries
+      .filter((f) => f.endsWith('.onnx'))
+      .map((f) => path.join(modelDir, f));
+  } catch {
+    // ignore if directory doesn't exist
+  }
+
+  const all = [...envModels, ...discovered];
+  return Array.from(new Set(all));
 }
 
 function configuredExistingPiperModels(): string[] {

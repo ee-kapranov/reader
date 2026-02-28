@@ -56,11 +56,15 @@ npm run dev
 
 ### Piper notes
 
-- Set `PIPER_MODEL` to at least one `.onnx` model path to enable synthesis with provider `piper`.
-- Add multiple models via `PIPER_MODELS` to expose them in the voice dropdown.
+- Place any `.onnx` model files in `.models/piper/` or set `PIPER_MODEL`/`PIPER_MODELS`.
+- The server automatically detects all models present in that directory and makes them selectable.
+- A Ukrainian voice (`uk_UA-lada-x_low`) is now included by default; it will appear automatically once the model file is present.
+- Running `npm run prestart` (or `npm run dev`) again will refresh the `.models/piper` directory and fetch any newly added voices even if Piper was already installed.
 - `speed` is mapped to Piper `--length_scale`; `pitch` is ignored by Piper.
 
 ### Local Piper setup (Ubuntu)
+
+*(the step-by-step above is only needed if you prefer manual installation; `npm start`/`npm run dev` now auto-downloads English and Ukrainian voices)*
 
 The steps below install Piper locally in the project directory (no system package required):
 
