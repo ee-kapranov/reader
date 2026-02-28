@@ -117,7 +117,9 @@
       downloadLink.download = `speech.${ext}`;
 
       playerSection.style.display = '';
-      audioPlayer.play();
+      audioPlayer.play().catch((err) => {
+        console.warn('Audio playback failed or was blocked by the browser:', err);
+      });
     } catch (err) {
       showError(genError, err.message || 'Failed to generate speech');
     } finally {
