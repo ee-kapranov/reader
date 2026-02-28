@@ -31,8 +31,8 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const tmpTxt = path.join(os.tmpdir(), `reader-${id}.txt`);
     fs.writeFileSync(tmpTxt, text, 'utf8');
 
-    const speedArg = speed ? `-s ${Math.max(80, Math.min(400, Number(speed)))}` : '';
-    const pitchArg = pitch ? `-p ${Math.max(0, Math.min(99, Number(pitch)))}` : '';
+    const speedArg = speed != null ? `-s ${Math.max(80, Math.min(400, Number(speed)))}` : '';
+    const pitchArg = pitch != null ? `-p ${Math.max(0, Math.min(99, Number(pitch)))}` : '';
 
     logger.info({ requestId, event: 'tts_start', textLength: text.length, speed, pitch });
 
